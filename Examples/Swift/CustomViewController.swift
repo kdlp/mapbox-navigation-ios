@@ -79,9 +79,14 @@ class CustomViewController: UIViewController, MGLMapViewDelegate, AVSpeechSynthe
     // When the alert level changes, this signals the user is ready for a voice announcement
     func alertLevelDidChange(_ notification: NSNotification) {
         let routeProgress = notification.userInfo![RouteControllerAlertLevelDidChangeNotificationRouteProgressKey] as! RouteProgress
-        let text = spokenInstructionFormatter.string(routeProgress: routeProgress, userDistance: routeProgress.currentLegProgress.currentStepProgress.distanceRemaining, markUpWithSSML: false)
 
-        let utterance = AVSpeechUtterance(string: text)
+        let utterance: AVSpeechUtterance
+        let text = spokenInstructionFormatter.attributedString(routeProgress: routeProgress, userDistance: routeProgress.currentLegProgress.currentStepProgress.distanceRemaining, markUpWithSSML: false)
+        if #available(iOS 10.0, *) {
+            utterance = AVSpeechUtterance(attributedString: text)
+        } else {
+            utterance = AVSpeechUtterance(string: text.string)
+        }
         speechSynth.delegate = self
         speechSynth.speak(utterance)
     }

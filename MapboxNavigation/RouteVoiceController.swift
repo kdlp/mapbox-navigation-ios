@@ -15,7 +15,6 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
     let spokenInstructionFormatter = SpokenInstructionFormatter()
     let routeStepFormatter = RouteStepFormatter()
     var recentlyAnnouncedRouteStep: RouteStep?
-    var fallbackText: String!
     var announcementTimer: Timer?
     
     /**
@@ -158,10 +157,12 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         recentlyAnnouncedRouteStep = nil
     }
     
-    open func alertLevelDidChange(notification: NSNotification) {
-        guard shouldSpeak(for: notification) == true else { return }
+    func alertLevelDidChange(notification: NSNotification) {
+        guard shouldSpeak(for: notification) else { return }
         
-        speak(fallbackText, error: nil)
+        let routeProgress = notification.userInfo![RouteControllerAlertLevelDidChangeNotificationRouteProgressKey] as! RouteProgress
+        let userDistance = notification.userInfo![RouteControllerAlertLevelDidChangeNotificationDistanceToEndOfManeuverKey] as! CLLocationDistance
+        speak(for: routeProgress, userDistance: userDistance)
         startAnnouncementTimer()
     }
     
@@ -169,7 +170,6 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         guard isEnabled, volume > 0, !NavigationSettings.shared.muted else { return false }
         
         let routeProgress = notification.userInfo![RouteControllerAlertLevelDidChangeNotificationRouteProgressKey] as! RouteProgress
-        let userDistance = notification.userInfo![RouteControllerAlertLevelDidChangeNotificationDistanceToEndOfManeuverKey] as! CLLocationDistance
         
         // We're guarding against two things here:
         //   1. `recentlyAnnouncedRouteStep` being nil.
@@ -182,8 +182,6 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         // Set recentlyAnnouncedRouteStep to the current step
         recentlyAnnouncedRouteStep = routeProgress.currentLegProgress.currentStep
         
-        fallbackText = spokenInstructionFormatter.string(routeProgress: routeProgress, userDistance: userDistance, markUpWithSSML: false)
-        
         // If the user is merging onto a highway, an announcement to merge is a bit excessive
         if let upComingStep = routeProgress.currentLegProgress.upComingStep, routeProgress.currentLegProgress.currentStep.maneuverType == .takeOnRamp && upComingStep.maneuverType == .merge && routeProgress.currentLegProgress.alertUserLevel == .high {
             return false
@@ -192,11 +190,11 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         return true
     }
     
-    func speak(_ text: String, error: String? = nil) {
-        // Note why it failed
-        if let error = error {
-            print(error)
-        }
+    /**
+     Speaks an utterance appropriate to the given route progress and distance along the route step.
+     */
+    open func speak(for routeProgress: RouteProgress, userDistance: CLLocationDistance) {
+        let text = spokenInstructionFormatter.attributedString(routeProgress: routeProgress, userDistance: userDistance, markUpWithSSML: false)
         
         do {
             try duckAudio()
@@ -204,12 +202,18 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
             print(error)
         }
         
-        let utterance = AVSpeechUtterance(string: text)
+        let utterance: AVSpeechUtterance
+        if Locale.preferredLocalLanguageCountryCode == "en-US" {
+            // Alex can’t handle attributed text.
+            utterance = AVSpeechUtterance(string: text.string)
+            utterance.voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)
+        } else if #available(iOS 10.0, *) {
+            utterance = AVSpeechUtterance(attributedString: text)
+        } else {
+            utterance = AVSpeechUtterance(string: text.string)
+        }
         
         // Only localized languages will have a proper fallback voice
-        if Locale.preferredLocalLanguageCountryCode == "en-US" {
-            utterance.voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)
-        }
         if utterance.voice == nil {
             utterance.voice = AVSpeechSynthesisVoice(language: Locale.preferredLocalLanguageCountryCode)
         }
