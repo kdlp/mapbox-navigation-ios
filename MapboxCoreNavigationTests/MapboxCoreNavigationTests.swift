@@ -20,8 +20,14 @@ class MapboxCoreNavigationTests: XCTestCase {
         let navigation = RouteController(along: route, directions: directions)
         navigation.resume()
         let depart = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: 0, speed: 10, timestamp: Date())
+       
+        #if swift(>=4.0)
+            let notifiation = NSNotification.Name(rawValue: RouteControllerDidPassSpokenInstructionPoint.rawValue)
+        #else
+            let notifiation = RouteControllerDidPassSpokenInstructionPoint.rawValue
+        #endif
         
-        self.expectation(forNotification: RouteControllerDidPassSpokenInstructionPoint.rawValue, object: navigation) { (notification) -> Bool in
+        self.expectation(forNotification: notifiation, object: navigation) { (notification) -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let routeProgress = notification.userInfo![RouteControllerDidPassSpokenInstructionPointRouteProgressKey] as? RouteProgress
@@ -42,8 +48,14 @@ class MapboxCoreNavigationTests: XCTestCase {
                                     altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: 171, speed: 10, timestamp: Date())
         let locationManager = ReplayLocationManager(locations: [location, location])
         let navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
+       
+        #if swift(>=4.0)
+            let notifiation = NSNotification.Name(rawValue: RouteControllerDidPassSpokenInstructionPoint.rawValue)
+        #else
+            let notifiation = RouteControllerDidPassSpokenInstructionPoint.rawValue
+        #endif
         
-        self.expectation(forNotification: RouteControllerDidPassSpokenInstructionPoint.rawValue, object: navigation) { (notification) -> Bool in
+        self.expectation(forNotification: notifiation, object: navigation) { (notification) -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let routeProgress = notification.userInfo![RouteControllerDidPassSpokenInstructionPointRouteProgressKey] as? RouteProgress
@@ -72,7 +84,13 @@ class MapboxCoreNavigationTests: XCTestCase {
         let locationManager = ReplayLocationManager(locations: [firstLocation, secondLocation])
         let navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
-        self.expectation(forNotification: RouteControllerWillReroute.rawValue, object: navigation) { (notification) -> Bool in
+        #if swift(>=4.0)
+            let notifiation = NSNotification.Name(rawValue: RouteControllerWillReroute.rawValue)
+        #else
+            let notifiation = RouteControllerWillReroute.rawValue
+        #endif
+        
+        self.expectation(forNotification: notifiation, object: navigation) { (notification) -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let location = notification.userInfo![RouteControllerNotificationLocationKey] as? CLLocation
@@ -99,9 +117,19 @@ class MapboxCoreNavigationTests: XCTestCase {
         route.accessToken = "foo"
         let navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
-        self.expectation(forNotification: RouteControllerProgressDidChange.rawValue, object: navigation) { (notification) -> Bool in
+        #if swift(>=4.0)
+            let notifiation = NSNotification.Name(rawValue: RouteControllerProgressDidChange.rawValue)
+        #else
+            let notifiation = RouteControllerProgressDidChange.rawValue
+        #endif
+        
+        self.expectation(forNotification: notifiation, object: navigation) { (notification) -> Bool in
             let routeProgress = notification.userInfo![RouteControllerDidPassSpokenInstructionPointRouteProgressKey] as? RouteProgress
-            return routeProgress != nil
+            guard let alertLevel = routeProgress?.currentLegProgress.alertUserLevel else {
+                return false
+            }
+            
+            return alertLevel == .arrive
         }
         
         navigation.resume()

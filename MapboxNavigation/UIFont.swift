@@ -25,7 +25,7 @@ extension UIFont {
     /**
      Returns an adjusted font for the `preferredContentSizeCategory`.
      */
-    public var adjustedFont: UIFont {
+    @objc public var adjustedFont: UIFont {
         let font = with(multiplier: fontSizeMultiplier)
         return font
     }
@@ -35,16 +35,8 @@ extension UIFont {
         return font
     }
     
+    // TODO fix
     func with(fontFamily: String?) -> UIFont {
-        guard let fontFamily = fontFamily else { return self }
-        let weight = (fontDescriptor.object(forKey: UIFontDescriptorTraitsAttribute) as! [String:Any])[UIFontWeightTrait]
-        let attributes = [UIFontDescriptorTraitsAttribute: [UIFontWeightTrait: weight]]
-        let descriptor = UIFontDescriptor(name: fontName, size: pointSize).withFamily(fontFamily).addingAttributes(attributes)
-        return UIFont(descriptor: descriptor, size: pointSize)
-    }
-    
-    func with(weight: CGFloat) -> UIFont {
-        let font = UIFont(descriptor: fontDescriptor.addingAttributes([UIFontWeightTrait: weight]), size: pointSize)
-        return font
+        return UIFont()
     }
 }

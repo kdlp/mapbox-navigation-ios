@@ -89,7 +89,11 @@ class RouteManeuverViewController: UIViewController {
      */
     var maximumAvailableStreetLabelSize: CGSize {
         get {
-            let height = ("|" as NSString).size(attributes: [NSFontAttributeName: destinationLabel.font]).height
+            #if swift(>=4.0)
+                let height = ("|" as NSString).size(withAttributes: [NSAttributedStringKey.font: destinationLabel.font]).height
+            #else
+                let height = ("|" as NSString).size(attributes: [NSFontAttributeName: destinationLabel.font]).height
+            #endif
             let lines = CGFloat(numberOfDestinationLines)
             let padding: CGFloat = 8*4
             return CGSize(width: view.bounds.width-padding-shieldImageView.bounds.size.width-turnArrowView.bounds.width, height: height*lines)

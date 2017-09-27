@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="aCx-td-5El">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="aCx-td-5El">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -130,7 +131,7 @@
             <objects>
                 <navigationController id="aCx-td-5El" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="RVz-Wl-lF8">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -158,10 +159,9 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="68P-Cf-VxO">
-                                <rect key="frame" x="158" y="587" width="60" height="60"/>
+                                <rect key="frame" x="163.5" y="587" width="49" height="60"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="60" id="LOt-aV-LJs"/>
                                     <constraint firstAttribute="height" constant="60" id="MfH-Ng-yLR"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="80"/>
@@ -191,10 +191,6 @@
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="⬆️" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qyT-xF-RHp">
                                         <rect key="frame" x="37" y="39" width="45" height="48"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="48" id="1pV-Xa-khq"/>
-                                            <constraint firstAttribute="width" constant="45" id="E7i-pe-mOP"/>
-                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -207,7 +203,7 @@
                                             </fragment>
                                         </attributedString>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="7g2-Jm-pgj">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="7g2-Jm-pgj">
                                         <rect key="frame" x="92" y="45" width="243" height="36"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>
                                         <nil key="textColor"/>
@@ -222,7 +218,7 @@
                                         </attributedString>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="200m" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="Lhw-bj-ZZ7">
-                                        <rect key="frame" x="92" y="24" width="58" height="24"/>
+                                        <rect key="frame" x="92" y="24" width="57" height="24"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -239,13 +235,15 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="7g2-Jm-pgj" firstAttribute="centerY" secondItem="Zeb-q8-C2a" secondAttribute="centerY" id="21j-M0-8gY"/>
+                                    <constraint firstItem="Lhw-bj-ZZ7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="qyT-xF-RHp" secondAttribute="trailing" symbolic="YES" id="CDQ-dd-WXW"/>
                                     <constraint firstAttribute="trailing" secondItem="7g2-Jm-pgj" secondAttribute="trailing" constant="8" id="Dec-Cu-Dk8"/>
+                                    <constraint firstAttribute="trailing" secondItem="Lhw-bj-ZZ7" secondAttribute="trailing" constant="194" id="Pza-q0-zrg"/>
                                     <constraint firstItem="qyT-xF-RHp" firstAttribute="centerY" secondItem="Zeb-q8-C2a" secondAttribute="centerY" id="QTG-47-JQB"/>
                                     <constraint firstAttribute="height" constant="125" id="WPM-Ea-3JU"/>
+                                    <constraint firstItem="Lhw-bj-ZZ7" firstAttribute="top" secondItem="Zeb-q8-C2a" secondAttribute="top" constant="24" id="bgy-v6-l1K"/>
                                     <constraint firstItem="7g2-Jm-pgj" firstAttribute="top" secondItem="Lhw-bj-ZZ7" secondAttribute="bottom" constant="-3.5" id="brV-6c-v0B"/>
                                     <constraint firstItem="qyT-xF-RHp" firstAttribute="leading" secondItem="Zeb-q8-C2a" secondAttribute="leading" constant="37" id="eIY-lI-anc"/>
                                     <constraint firstItem="7g2-Jm-pgj" firstAttribute="leading" secondItem="qyT-xF-RHp" secondAttribute="trailing" constant="10" id="m4t-jt-cfq"/>
-                                    <constraint firstItem="Lhw-bj-ZZ7" firstAttribute="leading" secondItem="7g2-Jm-pgj" secondAttribute="leading" id="q9v-xt-kQH"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">

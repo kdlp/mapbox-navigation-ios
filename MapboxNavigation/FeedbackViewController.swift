@@ -181,7 +181,7 @@ class FeedbackViewController: UIViewController, DismissDraggable, UIGestureRecog
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(dismissFeedback), object: nil)
     }
     
-    func dismissFeedback() {
+    @objc func dismissFeedback() {
         abortAutodismiss()
         dismissFeedbackHandler?()
     }

@@ -32,7 +32,11 @@ extension UIFont {
     // General styling
     fileprivate class var defaultPrimaryText: UIFont { get { return UIFont.systemFont(ofSize: 26) } }
     fileprivate class var defaultSecondaryText: UIFont { get { return UIFont.systemFont(ofSize: 16) } }
-    fileprivate class var defaultCellTitleLabel: UIFont { get { return UIFont.systemFont(ofSize: 28, weight: UIFontWeightMedium) } }
+    #if swift(>=4.0)
+        fileprivate class var defaultCellTitleLabel: UIFont { get { return UIFont.systemFont(ofSize: 28, weight: UIFont.Weight.medium) } }
+    #else
+        fileprivate class var defaultCellTitleLabel: UIFont { get { return UIFont.systemFont(ofSize: 28, weight: UIFontWeightMedium) } }
+    #endif
 }
 
 
@@ -41,7 +45,7 @@ extension UIFont {
  */
 open class DayStyle: Style {
     
-    public required init() {
+    @objc public required init() {
         super.init()
         mapStyleURL = URL(string: "mapbox://styles/mapbox/navigation-guidance-day-v2")!
         styleType = .dayStyle
@@ -63,7 +67,11 @@ open class DayStyle: Style {
         LineView.appearance().lineColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.1)
         SeparatorView.appearance().backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.1)
         
-        WayNameLabel.appearance().font = UIFont.systemFont(ofSize:20, weight: UIFontWeightMedium).adjustedFont
+        #if swift(>=4.0)
+            WayNameLabel.appearance().font = UIFont.systemFont(ofSize:20, weight: UIFont.Weight.medium).adjustedFont
+        #else
+            WayNameLabel.appearance().font = UIFont.systemFont(ofSize:20, weight: UIFontWeightMedium).adjustedFont
+        #endif
         WayNameLabel.appearance().textColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 1)
         WayNameView.appearance().borderColor = UIColor.defaultRouteCasing.withAlphaComponent(0.8)
         WayNameView.appearance().backgroundColor = UIColor.defaultRouteLayer.withAlphaComponent(0.85)
@@ -88,16 +96,30 @@ open class DayStyle: Style {
         DistanceLabel.appearance().font = UIFont.systemFont(ofSize: 26).adjustedFont
         DistanceLabel.appearance().textColor = #colorLiteral(red: 0.431372549, green: 0.431372549, blue: 0.431372549, alpha: 1)
         
-        DestinationLabel.appearance().font = UIFont.systemFont(ofSize: 32, weight: UIFontWeightMedium).adjustedFont
+        #if swift(>=4.0)
+            DestinationLabel.appearance().font = UIFont.systemFont(ofSize: 32, weight: UIFont.Weight.medium).adjustedFont
+        #else
+            DestinationLabel.appearance().font = UIFont.systemFont(ofSize:32, weight: UIFontWeightMedium).adjustedFont
+        #endif
         DestinationLabel.appearance().textColor = #colorLiteral(red: 0.09803921569, green: 0.09803921569, blue: 0.09803921569, alpha: 1)
         
-        ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
+        #if swift(>=4.0)
+            ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight.medium).adjustedFont
+        #else
+            ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
+        #endif
+
         ArrivalTimeLabel.appearance().textColor = .defaultPrimaryText
         
         // Table view (Drawer)
         RouteTableViewHeaderView.appearance().backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         
-        TimeRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 28, weight: UIFontWeightMedium).adjustedFont
+        #if swift(>=4.0)
+            TimeRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 28, weight: UIFont.Weight.medium).adjustedFont
+        #else
+            TimeRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 28, weight: UIFontWeightMedium).adjustedFont
+        #endif
+        
         TimeRemainingLabel.appearance().textColor = .defaultPrimaryText
         TimeRemainingLabel.appearance().trafficUnknownColor = .defaultPrimaryText
         TimeRemainingLabel.appearance().trafficLowColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
@@ -106,10 +128,20 @@ open class DayStyle: Style {
         TimeRemainingLabel.appearance().trafficSevereColor = #colorLiteral(red:0.54, green:0.06, blue:0.22, alpha:1.0)
         
         DistanceRemainingLabel.appearance().textColor = #colorLiteral(red: 0.431372549, green: 0.431372549, blue: 0.431372549, alpha: 1)
-        DistanceRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
+        
+        #if swift(>=4.0)
+            DistanceRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight.medium).adjustedFont
+        #else
+            DistanceRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
+        #endif
         
         ArrivalTimeLabel.appearance().textColor = .defaultPrimaryText
-        ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
+        
+        #if swift(>=4.0)
+            ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight.medium).adjustedFont
+        #else
+            ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
+        #endif
         
         CellTitleLabel.appearance().font = UIFont.systemFont(ofSize: 17).adjustedFont
         CellTitleLabel.appearance().textColor = .defaultPrimaryText
@@ -138,7 +170,7 @@ open class DayStyle: Style {
  */
 open class NightStyle: DayStyle {
     
-    public required init() {
+    @objc public required init() {
         super.init()
         mapStyleURL = URL(string: "mapbox://styles/mapbox/navigation-guidance-night-v2")!
         styleType = .nightStyle

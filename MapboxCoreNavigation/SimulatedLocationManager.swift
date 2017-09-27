@@ -56,7 +56,7 @@ public class SimulatedLocationManager: NavigationLocationManager {
      - parameter route: The initial route.
      - returns: A `SimulatedLocationManager`
      */
-    public init(route: Route) {
+    @objc public init(route: Route) {
         super.init()
         self.route = route
         reset()

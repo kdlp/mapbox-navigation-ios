@@ -11,7 +11,7 @@ public class ReplayLocationManager: NavigationLocationManager {
     /**
      `speedMultiplier` adjusts the speed of the replay.
      */
-    public var speedMultiplier: TimeInterval = 1
+    @objc public var speedMultiplier: TimeInterval = 1
     
     var currentIndex: Int = 0
     
@@ -20,7 +20,7 @@ public class ReplayLocationManager: NavigationLocationManager {
     /**
      `locations` to be replayed.
      */
-    public var locations: [CLLocation]! {
+    @objc public var locations: [CLLocation]! {
         didSet {
             currentIndex = 0
         }
@@ -32,7 +32,7 @@ public class ReplayLocationManager: NavigationLocationManager {
         }
     }
     
-    public init(locations: [CLLocation]) {
+    @objc public init(locations: [CLLocation]) {
         self.locations = locations.sorted { $0.timestamp < $1.timestamp }
         super.init()
     }

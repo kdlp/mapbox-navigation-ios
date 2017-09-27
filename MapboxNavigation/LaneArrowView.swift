@@ -15,13 +15,13 @@ open class LaneArrowView: UIView {
         return bounds.size
     }
     
-    public dynamic var primaryColor: UIColor = .defaultLaneArrowPrimary {
+    @objc public dynamic var primaryColor: UIColor = .defaultLaneArrowPrimary {
         didSet {
             setNeedsDisplay()
         }
     }
     
-    public dynamic var secondaryColor: UIColor = .defaultLaneArrowSecondary {
+    @objc public dynamic var secondaryColor: UIColor = .defaultLaneArrowSecondary {
         didSet {
             setNeedsDisplay()
         }

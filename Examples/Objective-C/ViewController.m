@@ -126,7 +126,6 @@
         
         MGLPointAnnotation *destination = [[MGLPointAnnotation alloc] init];
         destination.coordinate = self.destination;
-        controller.destination = destination;
         
         controller.routeController.locationManager = [[MBSimulatedLocationManager alloc] initWithRoute:self.route];
     }

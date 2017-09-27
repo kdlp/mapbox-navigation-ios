@@ -19,43 +19,46 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
     /**
      A boolean value indicating whether instructions should be announced by voice or not.
      */
-    public var isEnabled: Bool = true
+    @objc public var isEnabled: Bool = true
     
     
     /**
      Volume of announcements.
      */
-    public var volume: Float = 1.0
+    @objc public var volume: Float = 1.0
     
     
     /**
      SSML option which controls at which speed Polly instructions are read.
      */
-    public var instructionVoiceSpeedRate = 1.08
+    @objc public var instructionVoiceSpeedRate = 1.08
     
     
     /**
      SSML option that specifies the voice loudness.
      */
-    public var instructionVoiceVolume = "default"
+    @objc public var instructionVoiceVolume = "default"
     
     
     /**
      If true, a noise indicating the user is going to be rerouted will play prior to rerouting.
      */
-    public var playRerouteSound = true
+    @objc public var playRerouteSound = true
 
     
     /**
      Sound to play prior to reroute. Inherits volume level from `volume`.
      */
-    public var rerouteSoundPlayer: AVAudioPlayer = try! AVAudioPlayer(data: NSDataAsset(name: "reroute-sound", bundle: .mapboxNavigation)!.data, fileTypeHint: AVFileTypeMPEGLayer3)
-    
+    #if swift(>=4.0)
+        @objc public var rerouteSoundPlayer: AVAudioPlayer = try! AVAudioPlayer(data: NSDataAsset(name: "reroute-sound", bundle: .mapboxNavigation)!.data, fileTypeHint: AVFileType.mp3.rawValue)
+    #else
+        @objc public var rerouteSoundPlayer: AVAudioPlayer = try! AVAudioPlayer(data: NSDataAsset(name: "reroute-sound", bundle: .mapboxNavigation)!.data, fileTypeHint: AVFileTypeMPEGLayer3)
+    #endif
     
     /**
      Buffer time between announcements. After an announcement is given any announcement given within this `TimeInterval` will be suppressed.
     */
-    public var bufferBetweenAnnouncements: TimeInterval = 3
+    @objc public var bufferBetweenAnnouncements: TimeInterval = 3
     
     /**
      Default initializer for `RouteVoiceController`.
@@ -91,7 +94,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         NotificationCenter.default.removeObserver(self, name: RouteControllerDidReroute, object: nil)
     }
     
-    func didReroute(notification: NSNotification) {
+    @objc func didReroute(notification: NSNotification) {
         
         // Play reroute sound when a faster route is found
         if notification.userInfo?[RouteControllerDidFindFasterRouteKey] as! Bool {
@@ -99,7 +102,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         }
     }
     
-    func pauseSpeechAndPlayReroutingDing(notification: NSNotification) {
+    @objc func pauseSpeechAndPlayReroutingDing(notification: NSNotification) {
         speechSynth.stopSpeaking(at: .word)
         
         guard playRerouteSound && !NavigationSettings.shared.muted else {
@@ -110,7 +113,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         rerouteSoundPlayer.play()
     }
     
-    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    @objc public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         do {
             try unDuckAudio()
         } catch {
@@ -118,7 +121,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         }
     }
     
-    public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+    @objc public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         do {
             try unDuckAudio()
         } catch {
@@ -149,12 +152,12 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate, AVAudioP
         announcementTimer = Timer.scheduledTimer(timeInterval: bufferBetweenAnnouncements, target: self, selector: #selector(resetAnnouncementTimer), userInfo: nil, repeats: false)
     }
     
-    func resetAnnouncementTimer() {
+    @objc func resetAnnouncementTimer() {
         announcementTimer?.invalidate()
         recentlyAnnouncedRouteStep = nil
     }
     
-    open func didPassSpokenInstructionPoint(notification: NSNotification) {
+    @objc open func didPassSpokenInstructionPoint(notification: NSNotification) {
         guard shouldSpeak(for: notification) == true else { return }
         
         speak(fallbackText, error: nil)

@@ -40,7 +40,7 @@ extension RouteStep {
      - parameter markedUpWithSSML: True to wrap the name and route number in SSML tags that cause them to be read as addresses.
      - returns: A string describing the step’s road, or `nil` if the step lacks the information needed to describe the step.
      */
-    public func roadDescription(markedUpWithSSML: Bool) -> String? {
+    @objc public func roadDescription(markedUpWithSSML: Bool) -> String? {
         let addressSSML = { (text: String?) -> String? in
             guard let text = text else {
                 return nil

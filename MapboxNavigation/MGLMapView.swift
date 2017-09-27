@@ -11,7 +11,7 @@ extension MGLMapView {
     /**
      Toggle traffic on a map style that contains a Mapbox Traffic source.
      */
-    public var showsTraffic: Bool {
+    @objc public var showsTraffic: Bool {
         get {
             if let style = style {
                 for layer in style.layers {
