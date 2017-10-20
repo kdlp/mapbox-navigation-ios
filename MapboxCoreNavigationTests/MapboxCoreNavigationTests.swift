@@ -123,13 +123,9 @@ class MapboxCoreNavigationTests: XCTestCase {
             let notifiation = RouteControllerProgressDidChange.rawValue
         #endif
         
-        self.expectation(forNotification: notifiation, object: navigation) { (notification) -> Bool in
+        self.expectation(forNotification: RouteControllerProgressDidChange.rawValue, object: navigation) { (notification) -> Bool in
             let routeProgress = notification.userInfo![RouteControllerDidPassSpokenInstructionPointRouteProgressKey] as? RouteProgress
-            guard let alertLevel = routeProgress?.currentLegProgress.alertUserLevel else {
-                return false
-            }
-            
-            return alertLevel == .arrive
+            return routeProgress != nil
         }
         
         navigation.resume()
