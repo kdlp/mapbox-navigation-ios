@@ -99,7 +99,7 @@ class FeedbackViewController: UIViewController, DismissDraggable, UIGestureRecog
         perform(#selector(dismissFeedback), with: nil, afterDelay: autoDismissInterval)
     }
     
-    func didLongPress(_ sender: UIGestureRecognizer) {
+    @objc func didLongPress(_ sender: UIGestureRecognizer) {
         guard sender.state == .began || sender.state == .ended else { return }
         
         let touchLocation = sender.location(in: self.collectionView)
@@ -196,7 +196,7 @@ class FeedbackViewController: UIViewController, DismissDraggable, UIGestureRecog
         return !isDecendant
     }
     
-    func handleDismissTap(sender: UITapGestureRecognizer) {
+    @objc func handleDismissTap(sender: UITapGestureRecognizer) {
         dismissFeedback()
     }
 }
