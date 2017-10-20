@@ -80,7 +80,7 @@ open class NavigationMapView: MGLMapView {
         }
     }
     
-    public override init(frame: CGRect) {
+    @objc public override init(frame: CGRect) {
         super.init(frame: frame)
         
         makeGestureRecognizersRespectCourseTracking()
@@ -89,7 +89,7 @@ open class NavigationMapView: MGLMapView {
         resumeNotifications()
     }
     
-    public required init?(coder decoder: NSCoder) {
+    @objc public required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
         
         makeGestureRecognizersRespectCourseTracking()
@@ -98,18 +98,18 @@ open class NavigationMapView: MGLMapView {
         resumeNotifications()
     }
     
-    func resumeNotifications() {
+    @objc func resumeNotifications() {
         UIDevice.current.addObserver(self, forKeyPath: "batteryState", options: [.initial, .new], context: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(progressDidChange(_:)), name: RouteControllerProgressDidChange, object: nil)
         
     }
     
-    func suspendNotifications() {
+    @objc func suspendNotifications() {
         UIDevice.current.removeObserver(self, forKeyPath: "batteryState")
         NotificationCenter.default.removeObserver(self, name: RouteControllerProgressDidChange, object: nil)
     }
     
-    func progressDidChange(_ notification: Notification) {
+    @objc func progressDidChange(_ notification: Notification) {
         guard tracksUserCourse else { return }
         
         let routeProgress = notification.userInfo![RouteControllerProgressDidChangeNotificationProgressKey] as! RouteProgress
@@ -154,14 +154,14 @@ open class NavigationMapView: MGLMapView {
         suspendNotifications()
     }
     
-    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    @objc open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "batteryState" {
             let batteryState = UIDevice.current.batteryState
             isPluggedIn = batteryState == .charging || batteryState == .full
         }
     }
     
-    func updateCourseView(_ sender: UIGestureRecognizer) {
+    @objc func updateCourseView(_ sender: UIGestureRecognizer) {
         frameInterval = FrameIntervalOptions.defaultFrameInterval
         
         if sender.state == .ended {

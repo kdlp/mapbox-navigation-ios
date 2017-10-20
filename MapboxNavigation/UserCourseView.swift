@@ -29,21 +29,21 @@ public protocol UserCourseView {
 public class UserPuckCourseView: UIView, UserCourseView {
     
     // Sets the color on the user puck
-    public dynamic var puckColor: UIColor = #colorLiteral(red: 0.149, green: 0.239, blue: 0.341, alpha: 1) {
+    @objc public dynamic var puckColor: UIColor = #colorLiteral(red: 0.149, green: 0.239, blue: 0.341, alpha: 1) {
         didSet {
             puckView.puckColor = puckColor
         }
     }
     
     // Sets the fill color on the circle around the user puck
-    public dynamic var fillColor: UIColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) {
+    @objc public dynamic var fillColor: UIColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) {
         didSet {
             puckView.fillColor = fillColor
         }
     }
     
     // Sets the shadow color around the user puck
-    public dynamic var shadowColor: UIColor = #colorLiteral(red: 0.149, green: 0.239, blue: 0.341, alpha: 0.16) {
+    @objc public dynamic var shadowColor: UIColor = #colorLiteral(red: 0.149, green: 0.239, blue: 0.341, alpha: 0.16) {
         didSet {
             puckView.shadowColor = shadowColor
         }
@@ -74,7 +74,7 @@ public class UserPuckCourseView: UIView, UserCourseView {
     
     var direction: CLLocationDirection = 0
     
-    public func update(location: CLLocation, pitch: CGFloat, direction: CLLocationDegrees, animated: Bool, tracksUserCourse: Bool) {
+    @objc public func update(location: CLLocation, pitch: CGFloat, direction: CLLocationDegrees, animated: Bool, tracksUserCourse: Bool) {
         self.location = location
         self.direction = direction
         self.pitch = CLLocationDegrees(pitch)
