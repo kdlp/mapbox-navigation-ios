@@ -385,7 +385,7 @@ open class RouteStepProgress: NSObject {
     /**
      The distance in meters the user is to the next intersection they will pass through.
      */
-    @objc public var userDistanceToUpcomingIntersection: CLLocationDistance?
+    public var userDistanceToUpcomingIntersection: CLLocationDistance?
     
     /**
      Index into `step.instructionsSpokenAlongStep` representing the current instruction.
