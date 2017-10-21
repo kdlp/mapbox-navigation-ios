@@ -385,17 +385,17 @@ open class RouteStepProgress: NSObject {
     /**
      The distance in meters the user is to the next intersection they will pass through.
      */
-    public var userDistanceToUpcomingIntersection: CLLocationDistance?
+    @objc public var userDistanceToUpcomingIntersection: CLLocationDistance?
     
     /**
      Index into `step.instructionsSpokenAlongStep` representing the current instruction.
      */
-    public var spokenInstructionIndex = 0
+    @objc public var spokenInstructionIndex = 0
     
     /**
      Current Instruction for the user's progress along a step.
      */
-    public var currentSpokenInstruction: SpokenInstruction? {
+    @objc public var currentSpokenInstruction: SpokenInstruction? {
         guard let instructionsSpokenAlongStep = step.instructionsSpokenAlongStep else { return nil }
         return instructionsSpokenAlongStep[spokenInstructionIndex]
     }
