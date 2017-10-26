@@ -44,6 +44,6 @@ Pod::Spec.new do |s|
   s.dependency "OSRMTextInstructions", "~> 0.4"
   s.dependency "MapboxMobileEvents", "~> 0.2"
   s.dependency "Turf", "~> 0.0.3"
-  s.dependency "raphaelmor/Polyline", "~> 4.2"
+  s.dependency "Polyline", "~> 4.2"
 
 end
