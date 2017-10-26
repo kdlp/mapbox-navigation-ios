@@ -34,22 +34,23 @@ class RoutePageViewController: UIPageViewController {
     }
     
     func updateManeuverViewForStep() {
-        let step = maneuverDelegate.upComingStep ?? maneuverDelegate.currentStep
+        let upcomingStep = maneuverDelegate.upComingStep
         let leg = maneuverDelegate.currentLeg
-        let controller = routeManeuverViewController(with: step, leg: leg)!
+        let controller = routeManeuverViewController(with: upcomingStep, currentStep: maneuverDelegate.currentStep, leg: leg)!
         setViewControllers([controller], direction: .forward, animated: false, completion: nil)
         currentManeuverPage = controller
         maneuverDelegate.routePageViewController(self, willTransitionTo: controller, didSwipe: false)
     }
     
-    func routeManeuverViewController(with step: RouteStep?, leg: RouteLeg?) -> RouteManeuverViewController? {
-        guard step != nil else {
+    func routeManeuverViewController(with upcomingStep: RouteStep?, currentStep: RouteStep?, leg: RouteLeg?) -> RouteManeuverViewController? {
+        guard upcomingStep != nil else {
             return nil
         }
         
         let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
         let controller = storyboard.instantiateViewController(withIdentifier: "RouteManeuverViewController") as! RouteManeuverViewController
-        controller.upcomingStep = step
+        controller.upcomingStep = upcomingStep
+        controller.currentStep = currentStep
         controller.leg = leg
         return controller
     }
@@ -60,14 +61,14 @@ extension RoutePageViewController: UIPageViewControllerDataSource, UIPageViewCon
         let controller = viewController as! RouteManeuverViewController
         let stepAfter = maneuverDelegate.stepAfter(controller.upcomingStep!)
         let leg = maneuverDelegate.currentLeg
-        return routeManeuverViewController(with: stepAfter, leg: leg)
+        return routeManeuverViewController(with: stepAfter, currentStep: controller.upcomingStep, leg: leg)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         let controller = viewController as! RouteManeuverViewController
         let stepBefore = maneuverDelegate.stepBefore(controller.upcomingStep!)
         let leg = maneuverDelegate.currentLeg
-        return routeManeuverViewController(with: stepBefore, leg: leg)
+        return routeManeuverViewController(with: stepBefore, currentStep: controller.upcomingStep, leg: leg)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
