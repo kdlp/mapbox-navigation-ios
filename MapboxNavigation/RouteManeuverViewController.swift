@@ -19,6 +19,15 @@ class RouteManeuverViewController: UIViewController {
         }
     }
     
+    var currentStep: RouteStep? {
+        didSet {
+            if isViewLoaded {
+                roadCode = upcomingStep?.codes?.first ?? upcomingStep?.destinationCodes?.first ?? upcomingStep?.destinations?.first
+                updateStreetNameForStep()
+            }
+        }
+    }
+    
     var leg: RouteLeg? {
         didSet {
             if isViewLoaded {

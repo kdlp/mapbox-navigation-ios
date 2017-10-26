@@ -323,12 +323,10 @@ class RouteMapViewController: UIViewController {
     func notifyDidChange(routeProgress: RouteProgress, location: CLLocation, secondsRemaining: TimeInterval) {
         guard var controller = routePageViewController.currentManeuverPage else { return }
         
-        let step = upComingStep ?? currentStep
-        
         // Clear the page view controller’s cached pages (before & after) if the step has been changed
         // to avoid going back to an already completed step and avoid duplicated future steps
-        if let previousStep = previousStep, previousStep != step {
-            controller = routePageViewController.routeManeuverViewController(with: step, leg: routeProgress.currentLeg)!
+        if let previousStep = previousStep, previousStep != upComingStep {
+            controller = routePageViewController.routeManeuverViewController(with: upComingStep, leg: routeProgress.currentLeg)!
             routePageViewController.setViewControllers([controller], direction: .forward, animated: false, completion: nil)
             routePageViewController.currentManeuverPage = controller
             routePageViewController(routePageViewController, willTransitionTo: controller, didSwipe: false)
@@ -340,10 +338,10 @@ class RouteMapViewController: UIViewController {
             }
         }
         
-        previousStep = step
+        previousStep = upComingStep
         
         // Do not update if the current page doesn't represent the current step
-        guard step == controller.upcomingStep else { return }
+        guard currentStep == controller.upcomingStep else { return }
         
         controller.notifyDidChange(routeProgress: routeProgress, secondsRemaining: secondsRemaining)
         
