@@ -10,7 +10,7 @@ class RouteManeuverViewController: UIViewController {
     let routeStepFormatter = RouteStepFormatter()
     let visualInstructionFormatter = VisualInstructionFormatter()
     
-    var step: RouteStep? {
+    var upcomingStep: RouteStep? {
         didSet {
             if isViewLoaded {
                 instructionsBannerView.maneuverView.step = step
@@ -58,7 +58,7 @@ class RouteManeuverViewController: UIViewController {
     }
     
     func updateStreetNameForStep() {
-        if let bannerInstructionsAlongStep = step?.bannerInstructionsAlongStep?.first {
+        if let bannerInstructionsAlongStep = upcomingStep?.bannerInstructionsAlongStep?.first {
             instructionsBannerView.set(bannerInstructionsAlongStep.primaryContent?.text, secondaryInstruction: bannerInstructionsAlongStep.secondaryContent?.text)
         } else {
             destinationLabel.unabridgedText = nil

@@ -49,7 +49,7 @@ class RoutePageViewController: UIPageViewController {
         
         let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
         let controller = storyboard.instantiateViewController(withIdentifier: "RouteManeuverViewController") as! RouteManeuverViewController
-        controller.step = step
+        controller.upcomingStep = step
         controller.leg = leg
         return controller
     }
@@ -58,14 +58,14 @@ class RoutePageViewController: UIPageViewController {
 extension RoutePageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         let controller = viewController as! RouteManeuverViewController
-        let stepAfter = maneuverDelegate.stepAfter(controller.step!)
+        let stepAfter = maneuverDelegate.stepAfter(controller.upcomingStep!)
         let leg = maneuverDelegate.currentLeg
         return routeManeuverViewController(with: stepAfter, leg: leg)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         let controller = viewController as! RouteManeuverViewController
-        let stepBefore = maneuverDelegate.stepBefore(controller.step!)
+        let stepBefore = maneuverDelegate.stepBefore(controller.upcomingStep!)
         let leg = maneuverDelegate.currentLeg
         return routeManeuverViewController(with: stepBefore, leg: leg)
     }
