@@ -25,6 +25,7 @@ open class NavigationRouteOptions: RouteOptions {
         attributeOptions = [.congestionLevel, .expectedTravelTime]
         includesSpokenInstructions = true
         distanceMeasurementSystem = Locale.current.usesMetricSystem ? .metric : .imperial
+        includeBannerInstructions = true
     }
 
 
