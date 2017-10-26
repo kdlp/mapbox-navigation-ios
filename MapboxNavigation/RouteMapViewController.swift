@@ -605,14 +605,12 @@ extension RouteMapViewController: RoutePageViewControllerDelegate {
         
         updateLaneViews(step: step, durationRemaining: 0)
 
-        if !isInOverviewMode {
-            if didSwipe, step != routeController.routeProgress.currentLegProgress.upComingStep {
+        if !isInOverviewMode, didSwipe {
+            if step != routeController.routeProgress.currentLegProgress.upComingStep {
                 mapView.enableFrameByFrameCourseViewTracking(for: 1)
                 mapView.tracksUserCourse = false
                 mapView.setCenter(step.maneuverLocation, zoomLevel: mapView.zoomLevel, direction: step.initialHeading!, animated: true, completionHandler: nil)
-            }
-            
-            if didSwipe, step == routeController.routeProgress.currentLegProgress.upComingStep {
+            } else {
                 mapView.tracksUserCourse = true
             }
         }
