@@ -69,7 +69,7 @@ class RouteMapViewController: UIViewController {
             }
             
             if let controller = routePageViewController.currentManeuverPage {
-                controller.upcomingStep = currentStep
+                controller.currentAndUpcomingStep.upcomingStep = currentStep
                 routePageViewController.updateManeuverViewForStep()
             }
         }
@@ -333,7 +333,7 @@ class RouteMapViewController: UIViewController {
         }
         
         if let upComingStep = routeProgress.currentLegProgress?.upComingStep, !routeProgress.currentLegProgress.userHasArrivedAtWaypoint {
-            if routePageViewController.currentManeuverPage.upcomingStep == upComingStep {
+            if routePageViewController.currentManeuverPage.currentAndUpcomingStep.upcomingStep == upComingStep {
                 updateLaneViews(step: upComingStep, durationRemaining: routeProgress.currentLegProgress.currentStepProgress.durationRemaining)
             }
         }
@@ -341,7 +341,7 @@ class RouteMapViewController: UIViewController {
         previousStep = upComingStep
         
         // Do not update if the current page doesn't represent the current step
-        guard currentStep == controller.upcomingStep else { return }
+        guard currentStep == controller.currentAndUpcomingStep.upcomingStep else { return }
         
         controller.notifyDidChange(routeProgress: routeProgress, secondsRemaining: secondsRemaining)
         
@@ -596,7 +596,7 @@ extension RouteMapViewController: MGLMapViewDelegate {
 
 extension RouteMapViewController: RoutePageViewControllerDelegate {
     internal func routePageViewController(_ controller: RoutePageViewController, willTransitionTo maneuverViewController: RouteManeuverViewController, didSwipe: Bool) {
-        let step = maneuverViewController.upcomingStep!
+        let step = maneuverViewController.currentAndUpcomingStep.upcomingStep!
 
         maneuverViewController.step = step
         maneuverViewController.distance = step.distance > 0 ? step.distance : nil

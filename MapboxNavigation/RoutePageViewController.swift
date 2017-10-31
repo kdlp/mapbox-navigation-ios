@@ -49,8 +49,7 @@ class RoutePageViewController: UIPageViewController {
         
         let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
         let controller = storyboard.instantiateViewController(withIdentifier: "RouteManeuverViewController") as! RouteManeuverViewController
-        controller.upcomingStep = upcomingStep
-        controller.currentStep = currentStep
+        controller.currentAndUpcomingStep = (currentStep, upcomingStep)
         controller.leg = leg
         return controller
     }
@@ -59,16 +58,16 @@ class RoutePageViewController: UIPageViewController {
 extension RoutePageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         let controller = viewController as! RouteManeuverViewController
-        let stepAfter = maneuverDelegate.stepAfter(controller.upcomingStep!)
+        let stepAfter = maneuverDelegate.stepAfter(controller.currentAndUpcomingStep.upcomingStep!)
         let leg = maneuverDelegate.currentLeg
-        return routeManeuverViewController(with: stepAfter, currentStep: controller.upcomingStep, leg: leg)
+        return routeManeuverViewController(with: stepAfter, currentStep: controller.currentAndUpcomingStep.upcomingStep, leg: leg)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         let controller = viewController as! RouteManeuverViewController
-        let stepBefore = maneuverDelegate.stepBefore(controller.upcomingStep!)
+        let stepBefore = maneuverDelegate.stepBefore(controller.currentAndUpcomingStep.upcomingStep!)
         let leg = maneuverDelegate.currentLeg
-        return routeManeuverViewController(with: stepBefore, currentStep: controller.upcomingStep, leg: leg)
+        return routeManeuverViewController(with: stepBefore, currentStep: controller.currentAndUpcomingStep.upcomingStep, leg: leg)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
