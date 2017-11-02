@@ -326,7 +326,7 @@ class RouteMapViewController: UIViewController {
         // Clear the page view controller’s cached pages (before & after) if the step has been changed
         // to avoid going back to an already completed step and avoid duplicated future steps
         if let previousStep = previousStep, previousStep != upComingStep {
-            controller = routePageViewController.routeManeuverViewController(with: upComingStep, currentStep: currentStep, leg: routeProgress.currentLeg)!
+            controller = routePageViewController.routeManeuverViewController(with: currentStep, upcomingStep: upComingStep, leg: routeProgress.currentLeg)!
             routePageViewController.setViewControllers([controller], direction: .forward, animated: false, completion: nil)
             routePageViewController.currentManeuverPage = controller
             routePageViewController(routePageViewController, willTransitionTo: controller, didSwipe: false)
