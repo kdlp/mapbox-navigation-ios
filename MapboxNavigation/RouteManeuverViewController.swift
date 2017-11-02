@@ -13,7 +13,7 @@ class RouteManeuverViewController: UIViewController {
     var currentAndUpcomingStep: (currentStep: RouteStep?, upcomingStep: RouteStep?) {
         didSet {
             if isViewLoaded {
-                instructionsBannerView.maneuverView.step = currentAndUpcomingStep.current
+                instructionsBannerView.maneuverView.step = currentAndUpcomingStep.currentStep
                 updateStreetNameForStep()
             }
         }
@@ -59,9 +59,7 @@ class RouteManeuverViewController: UIViewController {
     
     func updateStreetNameForStep() {
         if let bannerInstructionsAlongStep = currentAndUpcomingStep.currentStep?.visualInstructionsAlongStep?.first {
-            instructionsBannerView.set(bannerInstructionsAlongStep.primaryContent?.text, secondaryInstruction: bannerInstructionsAlongStep.secondaryContent?.text)
-        } else {
-            destinationLabel.unabridgedText = nil
+            instructionsBannerView.set(Instruction(bannerInstructionsAlongStep.primaryContent.text), secondaryInstruction: Instruction(bannerInstructionsAlongStep.secondaryContent?.text))
         }
     }
 }

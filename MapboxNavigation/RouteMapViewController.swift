@@ -598,7 +598,7 @@ extension RouteMapViewController: RoutePageViewControllerDelegate {
     internal func routePageViewController(_ controller: RoutePageViewController, willTransitionTo maneuverViewController: RouteManeuverViewController, didSwipe: Bool) {
         let step = maneuverViewController.currentAndUpcomingStep.upcomingStep!
 
-        maneuverViewController.step = step
+        maneuverViewController.currentAndUpcomingStep.currentStep = step
         maneuverViewController.distance = step.distance > 0 ? step.distance : nil
         
         updateLaneViews(step: step, durationRemaining: 0)
