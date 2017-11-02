@@ -177,8 +177,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
                 routeController.routeProgress = RouteProgress(route: route)
             }
             mapViewController?.notifyDidReroute(route: route)
-            tableViewController?.tableView.reloadData()
-            tableViewController?.updateETA(routeProgress: routeController.routeProgress)
+            bottomBannerView.updateETA(routeProgress: routeController.routeProgress)
         }
     }
     
@@ -298,8 +297,10 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         return currentMinutesFromMidnight < sunriseMinutesFromMidnight || currentMinutesFromMidnight > sunsetMinutesFromMidnight
     }
     
-    var tableViewController: RouteTableViewController?
+    //var tableViewController: RouteTableViewController?
     var mapViewController: RouteMapViewController?
+    
+    weak var bottomBannerView: BottomBannerView!
     
     let progressBar = ProgressBar()
     let routeStepFormatter = RouteStepFormatter()
@@ -323,12 +324,14 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         
         let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
         let mapViewController = storyboard.instantiateViewController(withIdentifier: "RouteMapViewController") as! RouteMapViewController
-        let tableViewController = storyboard.instantiateViewController(withIdentifier: "RouteTableViewController") as! RouteTableViewController
+//        let tableViewController = storyboard.instantiateViewController(withIdentifier: "RouteTableViewController") as! RouteTableViewController
         
         self.mapViewController = mapViewController
-        self.tableViewController = tableViewController
+//        self.tableViewController = tableViewController
         
         super.init(nibName: nil, bundle: nil)
+        
+        self.styles = styles ?? [DayStyle(), NightStyle()]
         
         addChildViewController(mapViewController)
         mapViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -340,17 +343,16 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         v.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         v.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         
-        addChildViewController(tableViewController)
-        tableViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableViewController.view)
+        let bottomBannerView = BottomBannerView()
+        view.addSubview(bottomBannerView)
+        bottomBannerView.translatesAutoresizingMaskIntoConstraints = false
+        bottomBannerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        bottomBannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        bottomBannerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        bottomBannerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        bottomBannerView.delegate = self
+        self.bottomBannerView = bottomBannerView
         
-        let bottomView = tableViewController.view!
-        bottomView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        bottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        bottomView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        bottomView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        
-        self.styles = styles ?? [DayStyle(), NightStyle()]
         self.directions = directions
         self.route = route
         
@@ -360,11 +362,8 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
 
         mapViewController.delegate = self
         mapViewController.routeController = routeController
-        mapViewController.routeTableViewController = tableViewController
         mapViewController.reportButton.isHidden = !showsReportFeedback
-
-        tableViewController.routeController = routeController
-        tableViewController.headerView.delegate = self
+        // TODO: set delegate on bottom banner to receive cancel events
 
         self.currentStyleType = styleTypeForTimeOfDay
         
@@ -378,24 +377,24 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         voiceController?.announcementTimer?.invalidate()
     }
     
-    override public func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier ?? "" {
-        case "MapViewControllerSegueIdentifier":
-            if let controller = segue.destination as? RouteMapViewController {
-                controller.routeController = routeController
-                mapViewController = controller
-                controller.delegate = self
-            }
-        case "TableViewControllerSegueIdentifier":
-            if let controller = segue.destination as? RouteTableViewController {
-                controller.headerView.delegate = self
-                controller.routeController = routeController
-                tableViewController = controller
-            }
-        default:
-            break
-        }
-    }
+//    override public func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        switch segue.identifier ?? "" {
+//        case "MapViewControllerSegueIdentifier":
+//            if let controller = segue.destination as? RouteMapViewController {
+//                controller.routeController = routeController
+//                mapViewController = controller
+//                controller.delegate = self
+//            }
+//        case "TableViewControllerSegueIdentifier":
+//            if let controller = segue.destination as? RouteTableViewController {
+//                controller.headerView.delegate = self
+//                controller.routeController = routeController
+//                tableViewController = controller
+//            }
+//        default:
+//            break
+//        }
+//    }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -447,7 +446,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         let secondsRemaining = notification.userInfo![RouteControllerProgressDidChangeNotificationSecondsRemainingOnStepKey] as! TimeInterval
 
         mapViewController?.notifyDidChange(routeProgress: routeProgress, location: location, secondsRemaining: secondsRemaining)
-        tableViewController?.updateETA(routeProgress: routeProgress)
+        bottomBannerView.updateETA(routeProgress: routeProgress)
         
         progressBar.setProgress(routeProgress.currentLegProgress.userHasArrivedAtWaypoint ? 1 : CGFloat(routeProgress.fractionTraveled), animated: true)
     }
@@ -457,7 +456,6 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         
         mapViewController?.updateMapOverlays(for: routeProgress)
         mapViewController?.updateCameraAltitude(for: routeProgress)
-        tableViewController?.reload()
         
         clearStaleNotifications()
         
@@ -488,7 +486,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
     }
     
     func updateETA() {
-        tableViewController?.updateETA(routeProgress: routeController.routeProgress)
+        bottomBannerView.updateETA(routeProgress: routeController.routeProgress)
     }
     
     func resetETATimer() {
@@ -612,8 +610,8 @@ extension NavigationViewController: RouteControllerDelegate {
     
     public func routeController(_ routeController: RouteController, didRerouteAlong route: Route) {
         mapViewController?.notifyDidReroute(route: route)
-        tableViewController?.tableView.reloadData()
-        tableViewController?.updateETA(routeProgress: routeController.routeProgress)
+        
+        updateETA()
         
         navigationDelegate?.navigationViewController?(self, didRerouteAlong: route)
     }
@@ -644,6 +642,16 @@ extension NavigationViewController: RouteControllerDelegate {
 
 extension NavigationViewController: RouteTableViewHeaderViewDelegate {
     func didTapCancel() {
+        if navigationDelegate?.navigationViewControllerDidCancelNavigation?(self) != nil {
+            // The receiver should handle dismissal of the NavigationViewController
+        } else {
+            dismiss(animated: true, completion: nil)
+        }
+    }
+}
+
+extension NavigationViewController: BottomBannerViewDelegate {
+    func didCancel() {
         if navigationDelegate?.navigationViewControllerDidCancelNavigation?(self) != nil {
             // The receiver should handle dismissal of the NavigationViewController
         } else {

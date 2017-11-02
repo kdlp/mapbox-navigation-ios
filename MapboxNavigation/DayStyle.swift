@@ -105,6 +105,7 @@ open class DayStyle: Style {
         
         // Table view (Drawer)
         RouteTableViewHeaderView.appearance().backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        BottomBannerView.appearance().backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         
         TimeRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 28, weight: UIFontWeightMedium).adjustedFont
         TimeRemainingLabel.appearance().textColor = .defaultPrimaryText
@@ -116,9 +117,6 @@ open class DayStyle: Style {
         
         DistanceRemainingLabel.appearance().textColor = #colorLiteral(red: 0.431372549, green: 0.431372549, blue: 0.431372549, alpha: 1)
         DistanceRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
-        
-        ArrivalTimeLabel.appearance().textColor = .defaultPrimaryText
-        ArrivalTimeLabel.appearance().font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium).adjustedFont
         
         CellTitleLabel.appearance().font = UIFont.systemFont(ofSize: 17).adjustedFont
         CellTitleLabel.appearance().textColor = .defaultPrimaryText
@@ -178,6 +176,7 @@ open class NightStyle: DayStyle {
         CellTurnArrowView.appearance().secondaryColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
         
         RouteTableViewHeaderView.appearance().backgroundColor = backgroundColor
+        BottomBannerView.appearance().backgroundColor = backgroundColor
         
         FloatingButton.appearance().backgroundColor = backgroundColor
         FloatingButton.appearance().tintColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)

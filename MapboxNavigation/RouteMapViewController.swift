@@ -18,11 +18,11 @@ class RouteMapViewController: UIViewController {
     @IBOutlet weak var wayNameLabel: WayNameLabel!
     @IBOutlet weak var wayNameView: UIView!
     @IBOutlet weak var maneuverContainerView: ManeuverContainerView!
+    @IBOutlet weak var instructionsBannerView: InstructionsBannerView!
     @IBOutlet weak var statusView: StatusView!
     @IBOutlet weak var laneViewsContainerView: LanesContainerView!
     
-    var routePageViewController: RoutePageViewController!
-    var routeTableViewController: RouteTableViewController?
+    let visualInstructionFormatter = VisualInstructionFormatter()
     let routeStepFormatter = RouteStepFormatter()
 
     var route: Route { return routeController.routeProgress.route }
@@ -65,11 +65,6 @@ class RouteMapViewController: UIViewController {
                 overviewButton.isHidden = false
                 recenterButton.isHidden = true
                 mapView.logoView.isHidden = false
-            }
-            
-            if let controller = routePageViewController.currentManeuverPage {
-                controller.step = currentStep
-                routePageViewController.updateManeuverViewForStep()
             }
         }
     }
@@ -205,18 +200,6 @@ class RouteMapViewController: UIViewController {
         controller.transitioningDelegate = controller
         parent.present(controller, animated: true, completion: nil)
     }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier ?? "" {
-        case "RoutePageViewController":
-            if let controller = segue.destination as? RoutePageViewController {
-                routePageViewController = controller
-                controller.maneuverDelegate = self
-            }
-        default:
-            break
-        }
-    }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -243,8 +226,10 @@ class RouteMapViewController: UIViewController {
     }
 
     func notifyDidReroute(route: Route) {
-        routePageViewController.updateManeuverViewForStep()
-
+        if let location = routeController.location { // TODO: Verify this
+            updateInstructions(routeProgress: routeController.routeProgress, location: location, secondsRemaining: 0)
+        }
+        
         mapView.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
         mapView.showRoute(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
         
@@ -295,9 +280,9 @@ class RouteMapViewController: UIViewController {
         let defaultAltitude = NavigationMapView.defaultAltitude
         let isLongRoad = routeProgress.distanceRemaining >= NavigationMapView.longManeuverDistance
         
-        
-        let currentStepIsMotorway = currentStep.isMotorway
-        let nextStepIsMotorway = upComingStep?.isMotorway ?? false
+        let currentLegProgress = routeController.routeProgress.currentLegProgress
+        let currentStepIsMotorway = currentLegProgress!.currentStep.isMotorway
+        let nextStepIsMotorway = currentLegProgress!.upComingStep?.isMotorway ?? false
         
         if currentStepIsMotorway, nextStepIsMotorway, isLongRoad {
             setCamera(altitude: zoomOutAltitude)
@@ -320,31 +305,15 @@ class RouteMapViewController: UIViewController {
     }
 
     func notifyDidChange(routeProgress: RouteProgress, location: CLLocation, secondsRemaining: TimeInterval) {
-        guard var controller = routePageViewController.currentManeuverPage else { return }
-        
-        let step = upComingStep ?? currentStep
-        
-        // Clear the page view controller’s cached pages (before & after) if the step has been changed
-        // to avoid going back to an already completed step and avoid duplicated future steps
-        if let previousStep = previousStep, previousStep != step {
-            controller = routePageViewController.routeManeuverViewController(with: step, leg: routeProgress.currentLeg)!
-            routePageViewController.setViewControllers([controller], direction: .forward, animated: false, completion: nil)
-            routePageViewController.currentManeuverPage = controller
-            routePageViewController(routePageViewController, willTransitionTo: controller, didSwipe: false)
-        }
+        let step = routeProgress.currentLegProgress.upComingStep ?? routeProgress.currentLegProgress.currentStep
         
         if let upComingStep = routeProgress.currentLegProgress?.upComingStep, !routeProgress.currentLegProgress.userHasArrivedAtWaypoint {
-            if routePageViewController.currentManeuverPage.step == upComingStep {
-                updateLaneViews(step: upComingStep, durationRemaining: routeProgress.currentLegProgress.currentStepProgress.durationRemaining)
-            }
+            updateLaneViews(step: upComingStep, durationRemaining: routeProgress.currentLegProgress.currentStepProgress.durationRemaining)
         }
         
         previousStep = step
         
-        // Do not update if the current page doesn't represent the current step
-        guard step == controller.step else { return }
-        
-        controller.notifyDidChange(routeProgress: routeProgress, secondsRemaining: secondsRemaining)
+        updateInstructions(routeProgress: routeProgress, location: location, secondsRemaining: secondsRemaining)
         
         if currentLegIndexMapped != routeProgress.legIndex {
             mapView.showWaypoints(routeProgress.route, legIndex: routeProgress.legIndex)
@@ -364,8 +333,29 @@ class RouteMapViewController: UIViewController {
         updateVisibleBounds()
     }
     
+    func updateInstructions(routeProgress: RouteProgress, location: CLLocation, secondsRemaining: TimeInterval) {
+        let stepProgress = routeProgress.currentLegProgress.currentStepProgress
+        let distanceRemaining = stepProgress.distanceRemaining
+        
+        instructionsBannerView.distance = distanceRemaining > 5 ? distanceRemaining : 0
+        
+        if routeProgress.currentLegProgress.userHasArrivedAtWaypoint {
+            instructionsBannerView.distance = nil
+            
+            if let text = routeProgress.currentLeg.destination.name ?? routeStepFormatter.string(for: routeStepFormatter.string(for: routeProgress.currentLegProgress.upComingStep, legIndex: routeProgress.legIndex, numberOfLegs: routeProgress.route.legs.count, markUpWithSSML: false)) {
+                instructionsBannerView.set(Instruction(text), secondaryInstruction: nil)
+            }
+            
+        } else {
+            let instructions = visualInstructionFormatter.instructions(leg: routeProgress.currentLeg, step: routeProgress.currentLegProgress.currentStep)
+            instructionsBannerView.set(instructions.0, secondaryInstruction: instructions.1)
+        }
+        
+        instructionsBannerView.maneuverView.step = routeProgress.currentLegProgress.upComingStep
+    }
+    
     var contentInsets: UIEdgeInsets {
-        return UIEdgeInsets(top: routePageViewController.view.bounds.height, left: 0, bottom: 80, right: 0)
+        return UIEdgeInsets(top: maneuverContainerView.bounds.height, left: 0, bottom: 80, right: 0)
     }
     
     func updateLaneViews(step: RouteStep, durationRemaining: TimeInterval) {
@@ -576,66 +566,6 @@ extension RouteMapViewController: MGLMapViewDelegate {
         if routeController.showDebugSpokenInstructionsOnMap {
             mapView.showVoiceInstructionsOnMap(route: routeController.routeProgress.route)
         }
-    }
-}
-
-// MARK: RouteManeuverPageViewControllerDelegate
-
-extension RouteMapViewController: RoutePageViewControllerDelegate {
-    internal func routePageViewController(_ controller: RoutePageViewController, willTransitionTo maneuverViewController: RouteManeuverViewController, didSwipe: Bool) {
-        let step = maneuverViewController.step!
-
-        maneuverViewController.step = step
-        maneuverViewController.distance = step.distance > 0 ? step.distance : nil
-        
-        updateLaneViews(step: step, durationRemaining: 0)
-
-        if !isInOverviewMode {
-            if didSwipe, step != routeController.routeProgress.currentLegProgress.upComingStep {
-                mapView.enableFrameByFrameCourseViewTracking(for: 1)
-                mapView.tracksUserCourse = false
-                mapView.setCenter(step.maneuverLocation, zoomLevel: mapView.zoomLevel, direction: step.initialHeading!, animated: true, completionHandler: nil)
-            }
-            
-            if didSwipe, step == routeController.routeProgress.currentLegProgress.upComingStep {
-                mapView.tracksUserCourse = true
-            }
-        }
-        
-        if let stepIndex = routeController.routeProgress.currentLeg.steps.index(where: { $0 == step }), stepAfter(step) != nil {
-            mapView.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: stepIndex)
-        } else {
-            mapView.removeArrow()
-        }
-    }
-    
-    var currentLeg: RouteLeg {
-        return routeController.routeProgress.currentLeg
-    }
-    
-    var upComingStep: RouteStep? {
-        return routeController.routeProgress.currentLegProgress.upComingStep
-    }
-    
-    var currentStep: RouteStep {
-        return routeController.routeProgress.currentLegProgress.currentStep
-    }
-
-    func stepBefore(_ step: RouteStep) -> RouteStep? {
-        guard let legProgress = routeController.routeProgress.currentLegProgress,
-            let index = legProgress.leg.steps.index(of: step),
-            index - 1 > legProgress.stepIndex,
-            !isInOverviewMode else {
-            return nil
-        }
-        return routeController.routeProgress.currentLegProgress.stepBefore(step)
-    }
-
-    func stepAfter(_ step: RouteStep) -> RouteStep? {
-        guard !isInOverviewMode else {
-            return nil
-        }
-        return routeController.routeProgress.currentLegProgress.stepAfter(step)
     }
 }
 
